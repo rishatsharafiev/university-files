@@ -1,14 +1,15 @@
-import uuid
 import os
 import random
+import uuid
 from urllib.parse import urlparse
-import requests
 
+import requests
 from conf import settings
 from django.contrib.sites.models import Site
 
 
 def download_file(url):
+    """Download file"""
     user_agents = [
         'Opera/9.80 (Windows NT 6.1; U; zh-cn) Presto/2.7.62 Version/11.01',
         'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.20.25 (KHTML, like Gecko) '
@@ -232,23 +233,22 @@ def download_file(url):
     }
 
     response = requests.get(url, stream=True, allow_redirects=True)
-    if len(response.history) >= 1:
-        url = response.history[-1].url
-        response = requests.get(url, stream=True, headers=headers)
-        if response.status_code == 200:
-            path = urlparse(url).path
-            path_list = os.path.splitext(path)
-            if len(path_list) >= 2:
-                extension = path_list[1]
-            else:
-                extension = ''
-            filename = f'{uuid.uuid4()}{extension}'
-            url_path = os.path.join(settings.MEDIA_URL, filename)
-            file_path = os.path.join(settings.MEDIA_ROOT, filename)
-            with open(file_path, 'wb') as file:
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:
-                        file.write(chunk)
+    url = response.history[-1].url if response.history else url
+    response = requests.get(url, stream=True, headers=headers)
+    if response.status_code == 200:
+        path = urlparse(url).path
+        path_list = os.path.splitext(path)
+        if len(path_list) >= 2:
+            extension = path_list[1]
+        else:
+            extension = ''
+        filename = f'{uuid.uuid4()}{extension}'
+        url_path = os.path.join(settings.MEDIA_URL, filename)
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        with open(file_path, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    file.write(chunk)
 
-            url = Site.objects.get_current()
-            return f'{settings.HTTP_SCHEMA}://{url}{url_path}'
+        url = Site.objects.get_current()
+        return f'{settings.HTTP_SCHEMA}://{url}{url_path}'

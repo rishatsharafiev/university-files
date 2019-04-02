@@ -26,4 +26,4 @@ class WebhookView(views.View):
                 self.logger.debug(f'--> {message}')
         except json.decoder.JSONDecodeError:
             return HttpResponse('JSONDecodeError', status=500)
-        return HttpResponse(f'Ok {url}')
+        return HttpResponse(f'Ok')
