@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+from ..tasks import download_task
+
 
 class WebhookView(views.View):
     """Webhook View"""
@@ -23,6 +25,10 @@ class WebhookView(views.View):
             message = json.loads(request.body)
             if 'action' in message and message.get('action') == 'download' \
                     and 'source' in message and 'url' in message:
+                download_task.delay(
+                    message.get('url'),
+                    message.get('source'),
+                )
                 self.logger.debug(f'--> {message}')
         except json.decoder.JSONDecodeError:
             return HttpResponse('JSONDecodeError', status=500)

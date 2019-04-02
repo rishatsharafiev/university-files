@@ -2,6 +2,10 @@ version: "3"
 networks:
   backend:
     driver: ${NETWORKS_DRIVER}
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
 
 volumes:
   app_log:
@@ -43,6 +47,8 @@ services:
       - net.ipv4.tcp_keepalive_time=600
       - net.ipv4.tcp_keepalive_intvl=15
       - net.ipv4.tcp_keepalive_probes=5
+    extra_hosts:
+      - "hostname:127.0.0.1"
 
 ### NGINX Server #########################################
   nginx:

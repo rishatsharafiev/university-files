@@ -359,3 +359,5 @@ LOGGING = {
 }
 
 HTTP_SCHEMA = env('HTTP_SCHEMA', cast=str, default='http')
+
+WEBHOOK_URL = env('WEBHOOK_URL', cast=str, default='http://192.168.0.1:5000/producer')
