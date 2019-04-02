@@ -32,6 +32,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 # Application definition
 
 DJANGO_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -356,3 +357,5 @@ LOGGING = {
         },
     },
 }
+
+HTTP_SCHEMA = env('HTTP_SCHEMA', cast=str, default='http')
